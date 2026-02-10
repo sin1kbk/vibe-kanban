@@ -6,7 +6,8 @@ use api_types::{Issue, IssuePriority};
 use uuid::Uuid;
 
 use super::{
-    get_txid, project_statuses::ProjectStatusRepository, pull_requests::PullRequestRepository,
+    get_txid, issue_assignees::IssueAssigneeRepository,
+    project_statuses::ProjectStatusRepository, pull_requests::PullRequestRepository,
     workspaces::WorkspaceRepository,
 };
 use api_types::PullRequestStatus;
@@ -22,6 +23,8 @@ pub enum IssueError {
     ProjectStatus(#[from] super::project_statuses::ProjectStatusError),
     #[error("workspace error: {0}")]
     Workspace(#[from] super::workspaces::WorkspaceError),
+    #[error("issue assignee error: {0}")]
+    IssueAssignee(#[from] super::issue_assignees::IssueAssigneeError),
 }
 
 pub struct IssueRepository;
@@ -371,55 +374,58 @@ impl IssueRepository {
         Ok(())
     }
 
-    /// Syncs issue status when a workspace is created.
-    /// If this is the first workspace for the issue and the issue is in "Backlog" or "To do",
-    /// moves the issue to "In progress".
-    pub async fn sync_status_from_workspace_created(
+    /// Syncs issue state when a workspace is created:
+    /// - If this is the first workspace and the issue is in "Backlog" or "To do", moves to "In progress"
+    /// - If the issue has no assignees, adds the workspace creator as an assignee
+    pub async fn sync_issue_from_workspace_created(
         pool: &PgPool,
         issue_id: Uuid,
+        user_id: Uuid,
     ) -> Result<(), IssueError> {
+        // Status sync: only on first workspace
         let workspace_count = WorkspaceRepository::count_by_issue_id(pool, issue_id).await?;
-        if workspace_count != 1 {
-            return Ok(());
+        if workspace_count == 1 {
+            if let Some(issue) = Self::find_by_id(pool, issue_id).await? {
+                if let Some(current_status) =
+                    ProjectStatusRepository::find_by_id(pool, issue.status_id).await?
+                {
+                    let current_name_lower = current_status.name.to_lowercase();
+                    if current_name_lower == "backlog" || current_name_lower == "to do" {
+                        if let Some(in_progress_status) =
+                            ProjectStatusRepository::find_by_name(
+                                pool,
+                                issue.project_id,
+                                "In progress",
+                            )
+                            .await?
+                        {
+                            Self::update(
+                                pool,
+                                issue_id,
+                                Some(in_progress_status.id),
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                            )
+                            .await?;
+                        }
+                    }
+                }
+            }
         }
 
-        let Some(issue) = Self::find_by_id(pool, issue_id).await? else {
-            return Ok(());
-        };
-
-        let Some(current_status) =
-            ProjectStatusRepository::find_by_id(pool, issue.status_id).await?
-        else {
-            return Ok(());
-        };
-
-        let current_name_lower = current_status.name.to_lowercase();
-        if current_name_lower != "backlog" && current_name_lower != "to do" {
-            return Ok(());
+        // Assignee sync: add creator if no assignees exist
+        let assignees = IssueAssigneeRepository::list_by_issue(pool, issue_id).await?;
+        if assignees.is_empty() {
+            IssueAssigneeRepository::create(pool, None, issue_id, user_id).await?;
         }
-
-        let Some(in_progress_status) =
-            ProjectStatusRepository::find_by_name(pool, issue.project_id, "In progress").await?
-        else {
-            return Ok(());
-        };
-
-        Self::update(
-            pool,
-            issue_id,
-            Some(in_progress_status.id),
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-        )
-        .await?;
 
         Ok(())
     }
