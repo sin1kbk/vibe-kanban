@@ -10,7 +10,7 @@ use super::{
     workspaces::WorkspaceRepository,
 };
 use api_types::PullRequestStatus;
-use crate::response::{DeleteResponse, MutationResponse};
+use api_types::{DeleteResponse, MutationResponse};
 
 #[derive(Debug, Error)]
 pub enum IssueError {
