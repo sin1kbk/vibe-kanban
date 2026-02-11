@@ -198,6 +198,42 @@
               "force": true,
               "model": "grok"
         }
+      },
+      "OPUS_4_6": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "opus-4.6"
+        }
+      },
+      "OPUS_4_6_THINKING": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "opus-4.6-thinking"
+        }
+      },
+      "GPT_5_3": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "gpt-5.3"
+        }
+      },
+      "GPT_5_3_HIGH": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "gpt-5.3-high"
+        }
+      },
+      "GPT_5_3_CODEX": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "gpt-5.3-codex"
+        }
+      },
+      "GPT_5_1_CODEX": {
+        "CURSOR_AGENT": {
+              "force": true,
+              "model": "gpt-5.1-codex"
+        }
       }
     },
     "COPILOT": {
