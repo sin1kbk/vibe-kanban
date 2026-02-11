@@ -4,13 +4,16 @@ SYSTEMD_DIR := /etc/systemd/system
 PROXY_UNIT := vibe-kanban-mobile-proxy.service
 UPSTREAM_UNIT := vibe-kanban.service
 LOCAL_SYSTEMD_DIR := systemd
+# Repo root (parent of mobile-proxy); override if needed when running make from mobile-proxy/
+REPO_ROOT ?= $(abspath $(CURDIR)/..)
 
-.PHONY: help install-units register reload restart status logs stop start disable enable uninstall run
+.PHONY: help install-units register reload restart status logs stop start disable enable uninstall run deps
 
 help:
 	@echo "mobile-proxy Makefile:"
+	@echo "  make deps       - install node dependencies (npm install) for the proxy"
 	@echo "  make run        - run proxy locally (no systemd); needs TARGET_ORIGIN if upstream not 127.0.0.1:3000"
-	@echo "  make register   - install/update unit files, daemon-reload, enable + restart services"
+	@echo "  make register   - deps + install/update unit files, daemon-reload, enable + restart services"
 	@echo "  make status     - show both service statuses"
 	@echo "  make logs       - tail proxy service logs"
 	@echo "  make restart    - restart upstream + proxy services"
@@ -20,18 +23,22 @@ help:
 	@echo "  make enable     - enable proxy service autostart"
 	@echo "  make uninstall  - disable and remove proxy unit file"
 
-run:
+deps:
 	npm install
+
+run: deps
 	exec node proxy.mjs
 
 install-units:
-	sudo install -m 644 "$(LOCAL_SYSTEMD_DIR)/$(UPSTREAM_UNIT)" "$(SYSTEMD_DIR)/$(UPSTREAM_UNIT)"
-	sudo install -m 644 "$(LOCAL_SYSTEMD_DIR)/$(PROXY_UNIT)" "$(SYSTEMD_DIR)/$(PROXY_UNIT)"
+	@echo "Using REPO_ROOT=$(REPO_ROOT)"
+	sed 's|{{REPO_ROOT}}|$(REPO_ROOT)|g' "$(LOCAL_SYSTEMD_DIR)/$(UPSTREAM_UNIT)" | sudo tee "$(SYSTEMD_DIR)/$(UPSTREAM_UNIT)" > /dev/null
+	sed 's|{{REPO_ROOT}}|$(REPO_ROOT)|g' "$(LOCAL_SYSTEMD_DIR)/$(PROXY_UNIT)" | sudo tee "$(SYSTEMD_DIR)/$(PROXY_UNIT)" > /dev/null
 
 reload:
 	sudo systemctl daemon-reload
 
 enable:
+	sudo systemctl enable "$(UPSTREAM_UNIT)"
 	sudo systemctl enable "$(PROXY_UNIT)"
 
 disable:
@@ -54,7 +61,7 @@ status:
 logs:
 	journalctl -u "$(PROXY_UNIT)" -f
 
-register: install-units reload enable restart status
+register: deps install-units reload enable restart status
 
 uninstall:
 	sudo systemctl disable --now "$(PROXY_UNIT)" || true

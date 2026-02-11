@@ -6,9 +6,9 @@ After=network.target
 Type=simple
 User=agent
 Environment=PORT=58081
-Environment=PATH=/home/agent/.local/share/mise/installs/node/24.13.0/bin:/home/agent/.local/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/home/agent/.local/share/mise/installs/node/24.13.0/bin/npx vibe-kanban@latest
-WorkingDirectory=/home/agent
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+WorkingDirectory={{REPO_ROOT}}
+ExecStart={{REPO_ROOT}}/target/release/server
 Restart=always
 RestartSec=5
 

@@ -9,9 +9,9 @@ User=agent
 Environment=PORT=58080
 Environment=HOST=127.0.0.1
 Environment=TARGET_ORIGIN=http://127.0.0.1:58081
-Environment=PATH=/home/agent/.local/share/mise/installs/node/24.13.0/bin:/home/agent/.local/bin:/usr/local/bin:/usr/bin:/bin
-WorkingDirectory=/home/agent/dev/others/vibe-kanban/mobile-proxy
-ExecStart=/home/agent/.local/share/mise/installs/node/24.13.0/bin/node /home/agent/dev/others/vibe-kanban/mobile-proxy/proxy.mjs
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+WorkingDirectory={{REPO_ROOT}}/mobile-proxy
+ExecStart=/usr/bin/env node proxy.mjs
 Restart=always
 RestartSec=5
 
