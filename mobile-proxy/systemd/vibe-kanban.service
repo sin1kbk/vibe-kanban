@@ -1,0 +1,16 @@
+[Unit]
+Description=Vibe Kanban
+After=network.target
+
+[Service]
+Type=simple
+User=agent
+Environment=PORT=58081
+Environment=PATH=/home/agent/.local/share/mise/installs/node/24.13.0/bin:/home/agent/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/agent/.local/share/mise/installs/node/24.13.0/bin/npx vibe-kanban@latest
+WorkingDirectory=/home/agent
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

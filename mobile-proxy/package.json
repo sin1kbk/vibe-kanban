@@ -1,0 +1,13 @@
+{
+  "name": "vibe-kanban-mobile-proxy",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Reverse proxy that injects mobile CSS for vibe-kanban",
+  "scripts": {
+    "start": "node proxy.mjs"
+  },
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  }
+}

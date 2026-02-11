@@ -1,0 +1,71 @@
+/* Mobile overrides injected by proxy for vibe-kanban.
+   Scope to new UI and mobile-sized screens only. */
+@media (max-width: 768px) {
+  /* Hide left AppBar to free horizontal space */
+  .new-design > div > div.bg-secondary.border-r {
+    display: none !important;
+  }
+
+  /* Expand content region to full width */
+  .new-design > div > div.flex.flex-col.flex-1.min-w-0 {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Kanban outer scroller: vertical-first */
+  .new-design .flex-1.overflow-x-auto.px-double {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Convert kanban columns from horizontal grid to vertical stack */
+  .new-design .inline-grid.grid-flow-col.auto-cols-\[minmax\(200px\,400px\)\].divide-x.border-x.items-stretch.min-h-full {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Normalize column widths/heights for stacked layout */
+  .new-design .flex.flex-col.min-h-40 {
+    width: 100% !important;
+    min-height: auto !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.25rem !important;
+    overflow: hidden !important;
+  }
+
+  /* Column header keeps context while scrolling */
+  .new-design .border-t.sticky.border-b.top-0.z-20.flex.shrink-0.items-center.justify-between.gap-2.p-base.bg-secondary {
+    top: 0 !important;
+    z-index: 10 !important;
+    background: hsl(var(--bg-secondary)) !important;
+  }
+
+  /* Cards: increase touch target and readability */
+  .new-design .p-base.outline-none.flex-col.border.-mt-\[1px\].-mx-\[1px\].bg-primary {
+    min-height: 3.5rem !important;
+    padding: 0.875rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Make card text less cramped on narrow screens */
+  .new-design .text-base.text-normal.truncate {
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  /* Ensure tappable controls meet minimum target */
+  .new-design button,
+  .new-design [role='button'] {
+    min-height: 2.75rem !important;
+  }
+}
