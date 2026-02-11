@@ -5,10 +5,11 @@ PROXY_UNIT := vibe-kanban-mobile-proxy.service
 UPSTREAM_UNIT := vibe-kanban.service
 LOCAL_SYSTEMD_DIR := systemd
 
-.PHONY: help install-units register reload restart status logs stop start disable enable uninstall
+.PHONY: help install-units register reload restart status logs stop start disable enable uninstall run
 
 help:
-	@echo "mobile-proxy systemd helper targets:"
+	@echo "mobile-proxy Makefile:"
+	@echo "  make run        - run proxy locally (no systemd); needs TARGET_ORIGIN if upstream not 127.0.0.1:3000"
 	@echo "  make register   - install/update unit files, daemon-reload, enable + restart services"
 	@echo "  make status     - show both service statuses"
 	@echo "  make logs       - tail proxy service logs"
@@ -18,6 +19,10 @@ help:
 	@echo "  make disable    - disable proxy service autostart"
 	@echo "  make enable     - enable proxy service autostart"
 	@echo "  make uninstall  - disable and remove proxy unit file"
+
+run:
+	npm install
+	exec node proxy.mjs
 
 install-units:
 	sudo install -m 644 "$(LOCAL_SYSTEMD_DIR)/$(UPSTREAM_UNIT)" "$(SYSTEMD_DIR)/$(UPSTREAM_UNIT)"

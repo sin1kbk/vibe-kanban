@@ -59,7 +59,16 @@ make start
 ## 手動起動（systemd なし）
 
 ```bash
-# upstream を 58081 で起動済み前提
+# Makefile から（既定: upstream 3000 → proxy 8080）
+make run
+
+# ポートを変える場合（upstream 58081 → proxy 58080）
+TARGET_ORIGIN="http://127.0.0.1:58081" PORT=58080 HOST=127.0.0.1 make run
+```
+
+または `start.sh` を直接実行:
+
+```bash
 TARGET_ORIGIN="http://127.0.0.1:58081" PORT=58080 HOST=127.0.0.1 ./start.sh
 ```
 
