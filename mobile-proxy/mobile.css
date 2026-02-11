@@ -11,7 +11,8 @@
     text-size-adjust: 100%;
   }
 
-  .new-design > div {
+  /* Root layout container (flex h-screen bg-primary) */
+  .new-design .flex.h-screen.bg-primary {
     padding-left: env(safe-area-inset-left, 0);
     padding-right: env(safe-area-inset-right, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
@@ -19,12 +20,12 @@
   }
 
   /* Hide left AppBar to free horizontal space */
-  .new-design > div > div.bg-secondary.border-r {
+  .new-design .bg-secondary.border-r.border-border {
     display: none !important;
   }
 
   /* Expand content region to full width */
-  .new-design > div > div.flex.flex-col.flex-1.min-w-0 {
+  .new-design .flex.h-screen.bg-primary > .flex.flex-col.flex-1.min-w-0 {
     width: 100% !important;
     min-width: 0 !important;
     padding-top: env(safe-area-inset-top, 0);
@@ -33,19 +34,20 @@
   /* -------------------------------------------------------------------------
      Project Kanban: header and filter area
      ------------------------------------------------------------------------- */
-  .new-design .flex.flex-col.h-full.space-y-base > .px-double.pt-double {
+  /* Reduce padding on project header */
+  .new-design .px-double.pt-double {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
     padding-top: 0.75rem !important;
-    padding-bottom: 0.5rem !important;
-    gap: 0.5rem !important;
   }
 
-  .new-design .flex.flex-col.h-full.space-y-base .text-2xl {
+  /* Smaller project title on mobile */
+  .new-design .text-2xl.font-medium {
     font-size: 1.25rem !important;
     line-height: 1.4 !important;
   }
 
+  /* Filter bar: reduce gap */
   .new-design .flex.flex-wrap.items-start.gap-base {
     gap: 0.5rem !important;
   }
@@ -53,7 +55,7 @@
   /* -------------------------------------------------------------------------
      Kanban outer scroller: vertical-first
      ------------------------------------------------------------------------- */
-  .new-design .flex-1.overflow-x-auto.px-double {
+  .new-design .flex-1.overflow-x-auto {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     padding-left: 0.5rem !important;
@@ -62,7 +64,7 @@
   }
 
   /* Convert kanban columns from horizontal grid to vertical stack */
-  .new-design .inline-grid.grid-flow-col.auto-cols-\[minmax\(200px\,400px\)\].divide-x.border-x.items-stretch.min-h-full {
+  .new-design .inline-grid.grid-flow-col {
     display: flex !important;
     flex-direction: column !important;
     gap: 0.5rem !important;
@@ -72,7 +74,7 @@
   }
 
   /* Normalize column widths/heights for stacked layout */
-  .new-design .flex.flex-col.min-h-40 {
+  .new-design .inline-grid.grid-flow-col > div {
     width: 100% !important;
     min-height: auto !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -81,7 +83,8 @@
   }
 
   /* Column header keeps context while scrolling */
-  .new-design .border-t.sticky.border-b.top-0.z-20.flex.shrink-0.items-center.justify-between.gap-2.p-base.bg-secondary {
+  .new-design .sticky.top-0.z-20.bg-secondary {
+    position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
     background: hsl(var(--bg-secondary)) !important;
@@ -90,7 +93,7 @@
   }
 
   /* Cards: increase touch target and readability */
-  .new-design .p-base.outline-none.flex-col.border.-mt-\[1px\].-mx-\[1px\].bg-primary {
+  .new-design .p-base.outline-none.flex-col.border.bg-primary {
     min-height: 3.5rem !important;
     padding: 0.875rem !important;
     margin-left: 0 !important;
@@ -114,11 +117,14 @@
     min-width: 2.75rem !important;
   }
 
+  /* Small icon buttons: ensure touch target but keep visual size */
   .new-design button.p-half,
   .new-design [role='button'].p-half {
     min-width: 2.75rem !important;
     min-height: 2.75rem !important;
-    padding: 0.5rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Reduce tap highlight; keep visible focus for a11y */
@@ -147,7 +153,7 @@
   }
 
   /* List view: same padding as kanban */
-  .new-design .flex-1.overflow-y-auto.px-double {
+  .new-design .flex-1.overflow-y-auto {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
     -webkit-overflow-scrolling: touch;
@@ -163,18 +169,18 @@
 
 /* Slightly larger breakpoint for small tablets / large phones */
 @media (max-width: 428px) {
-  .new-design .flex.flex-col.h-full.space-y-base > .px-double.pt-double {
+  .new-design .px-double.pt-double {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
 
-  .new-design .flex-1.overflow-x-auto.px-double,
-  .new-design .flex-1.overflow-y-auto.px-double {
+  .new-design .flex-1.overflow-x-auto,
+  .new-design .flex-1.overflow-y-auto {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
 
-  .new-design .p-base.outline-none.flex-col.border.-mt-\[1px\].-mx-\[1px\].bg-primary {
+  .new-design .p-base.outline-none.flex-col.border.bg-primary {
     padding: 0.75rem !important;
   }
 }
