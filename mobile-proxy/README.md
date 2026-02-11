@@ -5,7 +5,12 @@
 ## 構成
 
 - `proxy.mjs`: HTML の `</head>` 直前に `mobile-override.css` を注入する Node.js プロキシ
-- `mobile.css`: モバイル向け上書き CSS
+- `mobile.css`: モバイル向け上書き CSS（以下を反映）
+  - **Safe area**: ノッチ・ホームインジケータ用 `env(safe-area-inset-*)`、`100dvh`
+  - **レイアウト**: 左 AppBar 非表示、コンテンツ全幅、カンバン列の縦積み
+  - **Issue パネル**: 開時はカンバン上・パネル下の縦並び（35% / 65%）
+  - **タッチ**: 最小タップ領域 44px、タップハイライト調整
+  - **余白**: 768px 以下と 428px 以下で段階的にパディング縮小
 - `start.sh`: 手動起動用スクリプト
 - `systemd/`: systemd ユニット定義
 - `Makefile`: systemd 登録/更新/確認コマンド

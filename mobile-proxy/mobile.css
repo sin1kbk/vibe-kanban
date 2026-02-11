@@ -1,6 +1,23 @@
 /* Mobile overrides injected by proxy for vibe-kanban.
-   Scope to new UI and mobile-sized screens only. */
+   Scope to new UI and mobile-sized screens only.
+   Optimized for touch, safe areas, and vertical-first layout. */
+
 @media (max-width: 768px) {
+  /* -------------------------------------------------------------------------
+     Safe area & viewport
+     ------------------------------------------------------------------------- */
+  .new-design {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .new-design > div {
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    min-height: 100dvh;
+  }
+
   /* Hide left AppBar to free horizontal space */
   .new-design > div > div.bg-secondary.border-r {
     display: none !important;
@@ -10,14 +27,38 @@
   .new-design > div > div.flex.flex-col.flex-1.min-w-0 {
     width: 100% !important;
     min-width: 0 !important;
+    padding-top: env(safe-area-inset-top, 0);
   }
 
-  /* Kanban outer scroller: vertical-first */
+  /* -------------------------------------------------------------------------
+     Project Kanban: header and filter area
+     ------------------------------------------------------------------------- */
+  .new-design .flex.flex-col.h-full.space-y-base > .px-double.pt-double {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .new-design .flex.flex-col.h-full.space-y-base .text-2xl {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .new-design .flex.flex-wrap.items-start.gap-base {
+    gap: 0.5rem !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Kanban outer scroller: vertical-first
+     ------------------------------------------------------------------------- */
   .new-design .flex-1.overflow-x-auto.px-double {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Convert kanban columns from horizontal grid to vertical stack */
@@ -44,6 +85,8 @@
     top: 0 !important;
     z-index: 10 !important;
     background: hsl(var(--bg-secondary)) !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 
   /* Cards: increase touch target and readability */
@@ -52,6 +95,7 @@
     padding: 0.875rem !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    border-radius: 0.375rem !important;
   }
 
   /* Make card text less cramped on narrow screens */
@@ -63,9 +107,74 @@
     overflow: hidden !important;
   }
 
-  /* Ensure tappable controls meet minimum target */
+  /* Ensure tappable controls meet minimum target (44px) */
   .new-design button,
   .new-design [role='button'] {
     min-height: 2.75rem !important;
+    min-width: 2.75rem !important;
+  }
+
+  .new-design button.p-half,
+  .new-design [role='button'].p-half {
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Reduce tap highlight; keep visible focus for a11y */
+  .new-design * {
+    -webkit-tap-highlight-color: hsl(var(--muted) / 0.5);
+  }
+
+  /* -------------------------------------------------------------------------
+     Project layout: when issue panel is open, stack Kanban above panel
+     ------------------------------------------------------------------------- */
+  .new-design div:has(> #kanban-left):has(> #kanban-right) {
+    flex-direction: column !important;
+  }
+
+  .new-design #kanban-left {
+    flex: 0 0 35% !important;
+    max-height: 45% !important;
+    min-height: 0 !important;
+  }
+
+  .new-design #kanban-right {
+    flex: 1 1 65% !important;
+    min-height: 55% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* List view: same padding as kanban */
+  .new-design .flex-1.overflow-y-auto.px-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Navbar (top bar): compact on mobile */
+  .new-design nav.flex.items-center {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+}
+
+/* Slightly larger breakpoint for small tablets / large phones */
+@media (max-width: 428px) {
+  .new-design .flex.flex-col.h-full.space-y-base > .px-double.pt-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .new-design .flex-1.overflow-x-auto.px-double,
+  .new-design .flex-1.overflow-y-auto.px-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .new-design .p-base.outline-none.flex-col.border.-mt-\[1px\].-mx-\[1px\].bg-primary {
+    padding: 0.75rem !important;
   }
 }
