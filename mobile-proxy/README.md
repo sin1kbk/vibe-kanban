@@ -27,17 +27,17 @@
 `mobile-proxy` ディレクトリで実行:
 
 ```bash
-npm install
 make register
 ```
 
 `make register` は以下を一括実行します。
 
-1. systemd ユニットを `/etc/systemd/system` へ配置
-2. `systemctl daemon-reload`
-3. `vibe-kanban-mobile-proxy.service` の `enable`
-4. `vibe-kanban.service` / `vibe-kanban-mobile-proxy.service` の再起動
-5. 両サービスのステータス表示
+1. **deps**: `npm install`（プロキシ用の依存関係）
+2. systemd ユニットを `/etc/systemd/system` へ配置（`REPO_ROOT` を自動解決）
+3. `systemctl daemon-reload`
+4. `vibe-kanban.service` と `vibe-kanban-mobile-proxy.service` の **enable**
+5. 両サービスの **restart**
+6. 両サービスのステータス表示（**status**）
 
 ## よく使うコマンド
 
@@ -55,6 +55,68 @@ make logs
 make stop
 make start
 ```
+
+## リリース手順（systemd で運用する場合）
+
+本番／検証環境で systemd 経由で vibe-kanban と mobile-proxy を動かすときの手順です。
+
+### 前提
+
+- リポジトリルートで **サーババイナリをビルド済み**であること（`target/release/server` が存在する）。
+- 未ビルドの場合はリポジトリルートで:
+
+  ```bash
+  pnpm run build:npx
+  ```
+
+  でフロント＋Rust をビルドする（`target/release/server` ができるまで実行）。
+
+### 初回セットアップ
+
+1. リポジトリルートでサーバをビルド（上記のとおり）。
+2. `mobile-proxy` ディレクトリへ移動し、依存関係のインストールと systemd 登録を行う:
+
+   ```bash
+   cd mobile-proxy
+   make register
+   ```
+
+   `make register` は **deps**（`npm install`）→ ユニット配置 → **daemon-reload** → **enable** → **restart** → **status** まで一括で実行します。
+3. `make status` で両方とも `active (running)` であることを確認。
+
+### 更新時（コードや CSS を変えたあと）
+
+1. **vibe-kanban 本体だけ変更した場合**  
+   リポジトリルートで再ビルドし、両サービスを再起動:
+
+   ```bash
+   # リポジトリルートで
+   pnpm run build:npx   # 必要に応じて
+   cd mobile-proxy
+   make restart
+   ```
+
+2. **mobile-proxy だけ変更した場合**（`proxy.mjs` や `mobile.css` など）  
+   依存を入れ直してから proxy を再起動:
+
+   ```bash
+   cd mobile-proxy
+   make deps
+   make restart
+   ```
+
+3. **systemd ユニットだけ変更した場合**（`systemd/*.service` の編集）  
+   ユニットを再配置してから両方再起動:
+
+   ```bash
+   cd mobile-proxy
+   make register
+   ```
+
+### 注意
+
+- ユニット内のパス（`WorkingDirectory` / `ExecStart`）は、**`make install-units` 実行時の `mobile-proxy` の親ディレクトリ**が `REPO_ROOT` として埋め込まれます。別のワークツリーやクローンで使う場合は、そのディレクトリで改めて `make register` を実行してください。
+- `User=` はユニット内で `agent` になっています。別ユーザで動かす場合は `systemd/*.service` の `User=` を編集してから `make register` を実行してください。
 
 ## 手動起動（systemd なし）
 
