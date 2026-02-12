@@ -260,8 +260,10 @@
     min-height: 0 !important;
   }
 
-  /* Right sidebar (300px): hide on mobile */
-  .new-design .flex.h-full > .w-\[300px\].shrink-0 {
+  /* Right sidebar (RightSidebar in WorkspacesLayout): hide on mobile
+     This is the sidebar INSIDE the main content area (contains notes, etc.)
+     NOT the left sidebar (workspace list) */
+  .new-design .flex.h-full > .flex-1.min-w-0.h-full .flex.h-full > .w-\[300px\].shrink-0 {
     display: none !important;
   }
 
