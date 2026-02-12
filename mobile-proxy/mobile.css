@@ -29,11 +29,17 @@
     min-height: 100dvh;
   }
 
-  /* AppBar → Bottom navigation bar */
+  /* AppBar → Fixed bottom navigation bar */
   .new-design > div.flex.h-screen > div.flex.flex-col.items-center.h-full {
     /* Reset vertical layout to horizontal */
     flex-direction: row !important;
-    order: 99 !important; /* Move to bottom */
+    
+    /* Fixed positioning at bottom */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
     
     /* Sizing */
     width: 100% !important;
@@ -78,7 +84,8 @@
     width: 100% !important;
     min-width: 0 !important;
     padding-top: env(safe-area-inset-top, 0);
-    order: 1 !important; /* Before bottom nav */
+    /* Add bottom padding for fixed bottom nav (3.5rem + safe area) */
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0)) !important;
   }
 
   /* -------------------------------------------------------------------------
