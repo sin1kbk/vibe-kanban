@@ -231,6 +231,59 @@
     padding-right: 0.5rem !important;
     gap: 0.25rem !important;
   }
+
+  /* -------------------------------------------------------------------------
+     Workspaces Layout: Stack sidebar and main vertically
+     
+     Structure:
+     div.flex.flex-1.min-h-0.h-full (WorkspacesLayout root)
+       ├─ div.w-[300px].shrink-0 (Left sidebar - workspace list)
+       └─ div.flex-1.min-w-0 (Main content)
+     ------------------------------------------------------------------------- */
+  
+  /* WorkspacesLayout root: switch to column */
+  .new-design .flex.flex-1.min-h-0.h-full:has(> .shrink-0) {
+    flex-direction: column !important;
+  }
+
+  /* Left sidebar: full width, auto height */
+  .new-design .flex.flex-1.min-h-0.h-full > .shrink-0 {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 35% !important;
+    overflow-y: auto !important;
+  }
+
+  /* Main content area: take remaining space */
+  .new-design .flex.flex-1.min-h-0.h-full > .flex-1.min-w-0 {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Right sidebar (300px): hide on mobile */
+  .new-design .flex.h-full > .w-\[300px\].shrink-0 {
+    display: none !important;
+  }
+
+  /* Resizable panels in workspaces: make main panel full width */
+  .new-design .flex.h-full > .flex-1.min-w-0.h-full > div[data-panel-group] {
+    flex-direction: column !important;
+  }
+
+  .new-design div[data-panel-group] > div[data-panel] {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Hide right-main panel on mobile (changes/logs/preview) */
+  .new-design div[data-panel-group] > div[data-panel-id="right-main"] {
+    display: none !important;
+  }
+
+  /* Hide panel resize separators */
+  .new-design div[data-panel-group] > div[data-panel-resize-handle] {
+    display: none !important;
+  }
 }
 
 /* Smaller phones */
