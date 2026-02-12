@@ -1,37 +1,133 @@
 /* Mobile overrides injected by proxy for vibe-kanban.
-   Scope to new UI and mobile-sized screens only. */
+   Scope to new UI and mobile-sized screens only.
+   Optimized for touch, safe areas, and vertical-first layout. */
+
 @media (max-width: 768px) {
-  /* Hide left AppBar to free horizontal space */
-  .new-design > div > div.bg-secondary.border-r {
+  /* -------------------------------------------------------------------------
+     Safe area & viewport
+     ------------------------------------------------------------------------- */
+  .new-design {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* -------------------------------------------------------------------------
+     SharedAppLayout: Move AppBar to bottom navigation
+     
+     Structure:
+     .new-design
+       └─ div.flex.h-screen.bg-primary (SharedAppLayout root)
+            ├─ AppBar: div.flex.flex-col.items-center.h-full...bg-secondary.border-r.border-border
+            └─ Main:   div.flex.flex-col.flex-1.min-w-0
+     ------------------------------------------------------------------------- */
+  
+  /* Target the SharedAppLayout root container - switch to column for bottom nav */
+  .new-design > div.flex.h-screen {
+    flex-direction: column !important;
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
+    min-height: 100dvh;
+  }
+
+  /* AppBar → Fixed bottom navigation bar */
+  .new-design > div.flex.h-screen > div.flex.flex-col.items-center.h-full {
+    /* Reset vertical layout to horizontal */
+    flex-direction: row !important;
+    
+    /* Fixed positioning at bottom */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
+    
+    /* Sizing */
+    width: 100% !important;
+    height: auto !important;
+    min-height: 3.5rem !important;
+    max-height: 4rem !important;
+    
+    /* Styling */
+    border-right: none !important;
+    border-top: 1px solid hsl(var(--border)) !important;
+    padding: 0.5rem !important;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0)) !important;
+    gap: 0.25rem !important;
+    
+    /* Horizontal scroll for many projects */
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    
+    /* Alignment */
+    justify-content: flex-start !important;
+    align-items: center !important;
+  }
+
+  /* Hide the social links section in bottom nav (mt-auto group) */
+  .new-design > div.flex.h-screen > div.flex.flex-col.items-center.h-full > .mt-auto {
     display: none !important;
   }
 
-  /* Expand content region to full width */
-  .new-design > div > div.flex.flex-col.flex-1.min-w-0 {
-    width: 100% !important;
-    min-width: 0 !important;
+  /* Project buttons in bottom nav: smaller */
+  .new-design > div.flex.h-screen > div.flex.flex-col.items-center.h-full button {
+    flex-shrink: 0 !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-width: 2.5rem !important;
+    min-height: 2.5rem !important;
+    font-size: 0.75rem !important;
   }
 
-  /* Kanban outer scroller: vertical-first */
+  /* Expand main content - direct child that is flex-1 */
+  .new-design > div.flex.h-screen > div.flex.flex-col.flex-1 {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-top: env(safe-area-inset-top, 0);
+    /* Add bottom padding for fixed bottom nav (3.5rem + safe area) */
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0)) !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Project Kanban header
+     ------------------------------------------------------------------------- */
+  .new-design .px-double.pt-double {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 0.75rem !important;
+  }
+
+  .new-design .text-2xl.font-medium {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Kanban board: convert horizontal scroll to vertical stack
+     ------------------------------------------------------------------------- */
+  
+  /* Outer container: reduce padding, enable vertical scroll */
   .new-design .flex-1.overflow-x-auto.px-double {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Convert kanban columns from horizontal grid to vertical stack */
-  .new-design .inline-grid.grid-flow-col.auto-cols-\[minmax\(200px\,400px\)\].divide-x.border-x.items-stretch.min-h-full {
+  /* Kanban grid: convert to vertical flex */
+  .new-design .inline-grid.grid-flow-col {
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
     gap: 0.5rem !important;
     border-left: 0 !important;
     border-right: 0 !important;
     min-height: auto !important;
   }
 
-  /* Normalize column widths/heights for stacked layout */
-  .new-design .flex.flex-col.min-h-40 {
+  /* Kanban columns (direct children of the grid) */
+  .new-design .inline-grid.grid-flow-col > .flex.flex-col {
     width: 100% !important;
     min-height: auto !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -39,22 +135,27 @@
     overflow: hidden !important;
   }
 
-  /* Column header keeps context while scrolling */
-  .new-design .border-t.sticky.border-b.top-0.z-20.flex.shrink-0.items-center.justify-between.gap-2.p-base.bg-secondary {
+  /* Column headers */
+  .new-design .inline-grid.grid-flow-col .sticky.top-0 {
+    position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
-    background: hsl(var(--bg-secondary)) !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 
-  /* Cards: increase touch target and readability */
-  .new-design .p-base.outline-none.flex-col.border.-mt-\[1px\].-mx-\[1px\].bg-primary {
+  /* -------------------------------------------------------------------------
+     Cards: touch-friendly sizing
+     ------------------------------------------------------------------------- */
+  .new-design .p-base.outline-none.flex-col.border.bg-primary {
     min-height: 3.5rem !important;
     padding: 0.875rem !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    border-radius: 0.375rem !important;
   }
 
-  /* Make card text less cramped on narrow screens */
+  /* Card title: allow wrapping */
   .new-design .text-base.text-normal.truncate {
     white-space: normal !important;
     display: -webkit-box !important;
@@ -63,9 +164,144 @@
     overflow: hidden !important;
   }
 
-  /* Ensure tappable controls meet minimum target */
-  .new-design button,
-  .new-design [role='button'] {
+  /* -------------------------------------------------------------------------
+     Touch targets: ensure minimum 44px, but only for action buttons
+     ------------------------------------------------------------------------- */
+  
+  /* Icon-only buttons (have p-half class) */
+  .new-design button.p-half {
+    min-width: 2.75rem !important;
     min-height: 2.75rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Tap highlight */
+  .new-design * {
+    -webkit-tap-highlight-color: hsl(var(--muted) / 0.5);
+  }
+
+  /* -------------------------------------------------------------------------
+     Panel layout: full width when single panel (normal state)
+     ------------------------------------------------------------------------- */
+  .new-design div:has(> #kanban-left):not(:has(> #kanban-right)) > #kanban-left {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Issue panel: stack below kanban when open
+     Only apply when BOTH #kanban-left AND #kanban-right exist
+     ------------------------------------------------------------------------- */
+  .new-design div:has(> #kanban-left):has(> #kanban-right) {
+    flex-direction: column !important;
+  }
+
+  .new-design div:has(> #kanban-left):has(> #kanban-right) > #kanban-left {
+    flex: 0 0 35% !important;
+    max-height: 45% !important;
+    min-height: 0 !important;
+    width: 100% !important;
+  }
+
+  .new-design div:has(> #kanban-left):has(> #kanban-right) > #kanban-right {
+    flex: 1 1 65% !important;
+    min-height: 55% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     List view
+     ------------------------------------------------------------------------- */
+  .new-design .flex-1.overflow-y-auto.px-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* -------------------------------------------------------------------------
+     Navbar: compact
+     ------------------------------------------------------------------------- */
+  .new-design nav.flex.items-center {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Workspaces Layout: Stack sidebar and main vertically
+     
+     Structure:
+     div.flex.flex-1.min-h-0.h-full (WorkspacesLayout root)
+       ├─ div.w-[300px].shrink-0 (Left sidebar - workspace list)
+       └─ div.flex-1.min-w-0 (Main content)
+     ------------------------------------------------------------------------- */
+  
+  /* WorkspacesLayout root: switch to column */
+  .new-design .flex.flex-1.min-h-0.h-full:has(> .shrink-0) {
+    flex-direction: column !important;
+  }
+
+  /* Left sidebar: full width, auto height */
+  .new-design .flex.flex-1.min-h-0.h-full > .shrink-0 {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 35% !important;
+    overflow-y: auto !important;
+  }
+
+  /* Main content area: take remaining space */
+  .new-design .flex.flex-1.min-h-0.h-full > .flex-1.min-w-0 {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Right sidebar (RightSidebar in WorkspacesLayout): hide on mobile
+     This is the sidebar INSIDE the main content area (contains notes, etc.)
+     NOT the left sidebar (workspace list) */
+  .new-design .flex.h-full > .flex-1.min-w-0.h-full .flex.h-full > .w-\[300px\].shrink-0 {
+    display: none !important;
+  }
+
+  /* Resizable panels in workspaces: make main panel full width */
+  .new-design .flex.h-full > .flex-1.min-w-0.h-full > div[data-panel-group] {
+    flex-direction: column !important;
+  }
+
+  .new-design div[data-panel-group] > div[data-panel] {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Hide right-main panel on mobile (changes/logs/preview) */
+  .new-design div[data-panel-group] > div[data-panel-id="right-main"] {
+    display: none !important;
+  }
+
+  /* Hide panel resize separators */
+  .new-design div[data-panel-group] > div[data-panel-resize-handle] {
+    display: none !important;
+  }
+}
+
+/* Smaller phones */
+@media (max-width: 428px) {
+  .new-design .px-double.pt-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .new-design .flex-1.overflow-x-auto.px-double,
+  .new-design .flex-1.overflow-y-auto.px-double {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .new-design .p-base.outline-none.flex-col.border.bg-primary {
+    padding: 0.75rem !important;
   }
 }
