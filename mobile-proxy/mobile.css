@@ -11,51 +11,56 @@
     text-size-adjust: 100%;
   }
 
-  /* Root layout container (flex h-screen bg-primary) */
-  .new-design .flex.h-screen.bg-primary {
+  /* -------------------------------------------------------------------------
+     SharedAppLayout: Hide AppBar, expand main content
+     
+     Structure:
+     .new-design
+       └─ div.flex.h-screen.bg-primary (SharedAppLayout root)
+            ├─ AppBar: div.flex.flex-col.items-center.h-full...bg-secondary.border-r.border-border
+            └─ Main:   div.flex.flex-col.flex-1.min-w-0
+     ------------------------------------------------------------------------- */
+  
+  /* Target the SharedAppLayout root container */
+  .new-design > div.flex.h-screen {
     padding-left: env(safe-area-inset-left, 0);
     padding-right: env(safe-area-inset-right, 0);
     padding-bottom: env(safe-area-inset-bottom, 0);
     min-height: 100dvh;
   }
 
-  /* Hide left AppBar to free horizontal space */
-  .new-design .bg-secondary.border-r.border-border {
+  /* Hide AppBar - very specific: must be direct child with h-full and items-center (AppBar specific) */
+  .new-design > div.flex.h-screen > div.flex.flex-col.items-center.h-full {
     display: none !important;
   }
 
-  /* Expand content region to full width */
-  .new-design .flex.h-screen.bg-primary > .flex.flex-col.flex-1.min-w-0 {
+  /* Expand main content - direct child that is flex-1 */
+  .new-design > div.flex.h-screen > div.flex.flex-col.flex-1 {
     width: 100% !important;
     min-width: 0 !important;
     padding-top: env(safe-area-inset-top, 0);
   }
 
   /* -------------------------------------------------------------------------
-     Project Kanban: header and filter area
+     Project Kanban header
      ------------------------------------------------------------------------- */
-  /* Reduce padding on project header */
   .new-design .px-double.pt-double {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
     padding-top: 0.75rem !important;
   }
 
-  /* Smaller project title on mobile */
   .new-design .text-2xl.font-medium {
     font-size: 1.25rem !important;
     line-height: 1.4 !important;
   }
 
-  /* Filter bar: reduce gap */
-  .new-design .flex.flex-wrap.items-start.gap-base {
-    gap: 0.5rem !important;
-  }
-
   /* -------------------------------------------------------------------------
-     Kanban outer scroller: vertical-first
+     Kanban board: convert horizontal scroll to vertical stack
      ------------------------------------------------------------------------- */
-  .new-design .flex-1.overflow-x-auto {
+  
+  /* Outer container: reduce padding, enable vertical scroll */
+  .new-design .flex-1.overflow-x-auto.px-double {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     padding-left: 0.5rem !important;
@@ -63,18 +68,19 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Convert kanban columns from horizontal grid to vertical stack */
+  /* Kanban grid: convert to vertical flex */
   .new-design .inline-grid.grid-flow-col {
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
     gap: 0.5rem !important;
     border-left: 0 !important;
     border-right: 0 !important;
     min-height: auto !important;
   }
 
-  /* Normalize column widths/heights for stacked layout */
-  .new-design .inline-grid.grid-flow-col > div {
+  /* Kanban columns (direct children of the grid) */
+  .new-design .inline-grid.grid-flow-col > .flex.flex-col {
     width: 100% !important;
     min-height: auto !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -82,17 +88,18 @@
     overflow: hidden !important;
   }
 
-  /* Column header keeps context while scrolling */
-  .new-design .sticky.top-0.z-20.bg-secondary {
+  /* Column headers */
+  .new-design .inline-grid.grid-flow-col .sticky.top-0 {
     position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
-    background: hsl(var(--bg-secondary)) !important;
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
   }
 
-  /* Cards: increase touch target and readability */
+  /* -------------------------------------------------------------------------
+     Cards: touch-friendly sizing
+     ------------------------------------------------------------------------- */
   .new-design .p-base.outline-none.flex-col.border.bg-primary {
     min-height: 3.5rem !important;
     padding: 0.875rem !important;
@@ -101,7 +108,7 @@
     border-radius: 0.375rem !important;
   }
 
-  /* Make card text less cramped on narrow screens */
+  /* Card title: allow wrapping */
   .new-design .text-base.text-normal.truncate {
     white-space: normal !important;
     display: -webkit-box !important;
@@ -110,16 +117,12 @@
     overflow: hidden !important;
   }
 
-  /* Ensure tappable controls meet minimum target (44px) */
-  .new-design button,
-  .new-design [role='button'] {
-    min-height: 2.75rem !important;
-    min-width: 2.75rem !important;
-  }
-
-  /* Small icon buttons: ensure touch target but keep visual size */
-  .new-design button.p-half,
-  .new-design [role='button'].p-half {
+  /* -------------------------------------------------------------------------
+     Touch targets: ensure minimum 44px, but only for action buttons
+     ------------------------------------------------------------------------- */
+  
+  /* Icon-only buttons (have p-half class) */
+  .new-design button.p-half {
     min-width: 2.75rem !important;
     min-height: 2.75rem !important;
     display: inline-flex !important;
@@ -127,13 +130,13 @@
     justify-content: center !important;
   }
 
-  /* Reduce tap highlight; keep visible focus for a11y */
+  /* Tap highlight */
   .new-design * {
     -webkit-tap-highlight-color: hsl(var(--muted) / 0.5);
   }
 
   /* -------------------------------------------------------------------------
-     Project layout: when issue panel is open, stack Kanban above panel
+     Issue panel: stack below kanban when open
      ------------------------------------------------------------------------- */
   .new-design div:has(> #kanban-left):has(> #kanban-right) {
     flex-direction: column !important;
@@ -152,14 +155,18 @@
     max-width: 100% !important;
   }
 
-  /* List view: same padding as kanban */
-  .new-design .flex-1.overflow-y-auto {
+  /* -------------------------------------------------------------------------
+     List view
+     ------------------------------------------------------------------------- */
+  .new-design .flex-1.overflow-y-auto.px-double {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Navbar (top bar): compact on mobile */
+  /* -------------------------------------------------------------------------
+     Navbar: compact
+     ------------------------------------------------------------------------- */
   .new-design nav.flex.items-center {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
@@ -167,15 +174,15 @@
   }
 }
 
-/* Slightly larger breakpoint for small tablets / large phones */
+/* Smaller phones */
 @media (max-width: 428px) {
   .new-design .px-double.pt-double {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
 
-  .new-design .flex-1.overflow-x-auto,
-  .new-design .flex-1.overflow-y-auto {
+  .new-design .flex-1.overflow-x-auto.px-double,
+  .new-design .flex-1.overflow-y-auto.px-double {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
   }
