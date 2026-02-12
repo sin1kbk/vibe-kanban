@@ -136,19 +136,31 @@
   }
 
   /* -------------------------------------------------------------------------
+     Panel layout: full width when single panel (normal state)
+     ------------------------------------------------------------------------- */
+  .new-design div:has(> #kanban-left):not(:has(> #kanban-right)) > #kanban-left {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* -------------------------------------------------------------------------
      Issue panel: stack below kanban when open
+     Only apply when BOTH #kanban-left AND #kanban-right exist
      ------------------------------------------------------------------------- */
   .new-design div:has(> #kanban-left):has(> #kanban-right) {
     flex-direction: column !important;
   }
 
-  .new-design #kanban-left {
+  .new-design div:has(> #kanban-left):has(> #kanban-right) > #kanban-left {
     flex: 0 0 35% !important;
     max-height: 45% !important;
     min-height: 0 !important;
+    width: 100% !important;
   }
 
-  .new-design #kanban-right {
+  .new-design div:has(> #kanban-left):has(> #kanban-right) > #kanban-right {
     flex: 1 1 65% !important;
     min-height: 55% !important;
     min-width: 100% !important;
